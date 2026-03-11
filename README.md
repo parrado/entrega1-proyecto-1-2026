@@ -18,18 +18,13 @@ En ese sentido, esta parte del proyecto contempla la implementación de las regl
 
 ## Código base suministrado
 
-Se suministra el código base del servidor en el archivo [project_server.py](project_server.py) el cual contiene toda la funcionalidad para que éste opere dentro de una red de área local o en el mismo equipo de prueba, __este archivo no debe ser modificado bajo ninguna circustancia__. En ese sentido,  [project_server.py](project_server.py) usa el archivo [users.py](users.py) que incluye definiciones de funciones, las cuales deben ser implementadas o complementadas como parte de esta entrega del proyecto a partir del código creado en el [laboratorio 1](https://github.com/parrado/lab1-2-2025) y de acuerdo a lo descrito en los comentarios del archivo. **La correcta integración de estas funciones y su correcto funcionamiento determina la evaluación del lado del servidor del proyecto**.
+Se suministra el código base del servidor en el archivo [websocket_server.py](sever_side/websocket_server.py) el cual contiene toda la funcionalidad para que éste opere dentro de una red de área local o en el mismo equipo de prueba, __este archivo no debe ser modificado bajo ninguna circustancia__. En ese sentido,  [websocket_server.py](sever_side/websocket_server.py) usa los archivos [server_adapter.py](sever_side/server_adapter.py) y [game_engine.py](sever_side/game_engine.py) que incluyen acciones y definiciones de funciones, respectivamente. Las acciones y sus correspondientes funciones deben ser codificadas o complementadas para implementar todas las reglas de una partida de parqués,  de acuerdo a lo descrito en los comentarios de los dos archivos. **La correcta integración de estas acciones y funciones, junto con su correcto funcionamiento determina la evaluación del lado del servidor del proyecto**.
 
-El servidor debe permitir el registro de usuarios con un nombre, número de identificación, contraseña y rol, y una vez un usuario esté registrado podrá:
+El servidor debe llevar el control de la partida de parqués y la implementación de las reglas fundamentales. Para esto, en los archivos [server_adapter.py](sever_side/server_adapter.py) y [game_engine.py](sever_side/game_engine.py) se proponen un conjunto de acciones y funciones que pueden ser ajustadas o complementadas por parte del equipo de trabajo.
 
-* Iniciar sesión usando el número de identificación y la contraseña.
-* Cerrar sesión
-* Solicitar una consulta con un médico.
-* Listar los médicos disponibles
 
-Se debe incluir en el archivo  [users.py](users.py) el llamado a las funciones creadas en el  [laboratorio 1](https://github.com/parrado/lab1-2-2025) y dos funciones nuevas,  una para listar los médicos disponibles y otra para cerrar sesión.
 
-De otro lado, se suministran los archivos [project_client.py](project_client.py) y [test_project_client.py](test_project_client.py). En este caso,  [project_client.py](project_client.py) implementa la funcionalidad básica de los usuarios para la conexión con el servidor por lo que **no debe ser modificado bajo ninguna circunstancia**. De otro lado,  [test_project_client.py](test_project_client.py) es un archivo de prueba que se suministra para verificar el correcto funcionamiento del servidor y que puede ser modificado a gusto de los miembros del equipo. Para que [project_client.py](project_client.py) pueda funcionar correctamente se debe instalar el módulo de Python requests ejecutando el siguiente comando en una terminal:
+De otro lado, se suministran los archivos [client_transport.py](client_side/client_transport.py) y [test_client.py](client_side/test_client.py). En este caso,  [client_transport.py](client_side/client_transport.py) implementa la funcionalidad básica de los usuarios para la conexión con el servidor por lo que **no debe ser modificado bajo ninguna circunstancia**. De otro lado,  [test_project_client.py](test_project_client.py) es un archivo de prueba que se suministra para verificar el correcto funcionamiento del servidor y que puede ser modificado a gusto de los miembros del equipo. Para que [project_client.py](project_client.py) pueda funcionar correctamente se debe instalar el módulo de Python requests ejecutando el siguiente comando en una terminal:
 
 ``` pip install requests ```
 
