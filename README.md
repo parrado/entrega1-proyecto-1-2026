@@ -40,7 +40,7 @@ Tenga en cuenta que es posible que [websocket_server.py](server_side/websocket_s
 <img  src="Captura de pantalla (2).png" width="800" >
 </p>
 
-La IP encontrada debe sustituir "localhost" en la línea 8 de [test_client.py](https://github.com/parrado/entrega1-proyecto-1-2026/blob/8cc8563803cd2a75ac528aef191e6abe8ae82164/client_side/test_client.py#L8)
+La IP encontrada debe sustituir "127.0.0.1" en la línea 8 de [test_client.py](https://github.com/parrado/entrega1-proyecto-1-2026/blob/8cc8563803cd2a75ac528aef191e6abe8ae82164/client_side/test_client.py#L8)
 
 # Entregables
 
