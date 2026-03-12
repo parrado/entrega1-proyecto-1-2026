@@ -8,7 +8,7 @@ GDSPROC <br />
 Uniquindío <br />
 </p>
 
-Con el contenido de este repositorio se iniciará el desarrollo del código fuente en Python del proyecto del espacio académico. En este caso, y de acuerdo a la arquitectura mostrada en la siguiente figura, se construirá el código del lado del servidor que se requiere para implementar la lógica de un juego de parqués.
+El contenido de este repositorio es la base para iniciar el desarrollo del código fuente en Python del proyecto del espacio académico. En este caso, y de acuerdo a la arquitectura mostrada en la siguiente figura, se construirá el código del lado del servidor que se requiere para implementar la lógica de un juego de parqués.
 
 <p align="center">
 <img  src="Programación-I-2026.png" width="800" >
