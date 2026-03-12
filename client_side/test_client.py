@@ -5,7 +5,7 @@ from client_transport import GameClient
 
 def main():
 
-    client = GameClient()
+    client = GameClient("ws://127.0.0.1:8765")
     client.connect()
 
     print("\n--- INITIALIZE GAME ---")
