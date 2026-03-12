@@ -33,7 +33,7 @@ Finalmente, para que [websocket_server.py](server_side/websocket_server.py) y [c
 
 Para la realización de las pruebas debe ejecutar primero el programa [websocket_server.py](server_side/websocket_server.py), la recomendación es verificar el correcto funcionamiento de las funciones, una a la vez. Posteriormente se puede ejecutar el programa [test_client.py](client_side/test_client.py), en caso de que se creen ventanas emergentes de Windows solicitando permisos, por favor otorgarlos ya que los programas hacen uso de los servicios de red. 
 
-Tenga en cuenta que es posible que [websocket_server.py](server_side/websocket_server.py) y [client_transport.py](client_side/client_transport.py)  se ejecuten en computadores diferentes siempre y cuando los equipos se encuentren conectados a la misma red LAN cableada o inalámbrica. En ese caso basta con consultar la dirección IP del computador que está ejecutando [websocket_server.py](server_side/websocket_server.py) mediante el comando ipconfig como se muestra en la siguiente figura.
+Tenga en cuenta que es posible que [websocket_server.py](server_side/websocket_server.py) y [client_transport.py](client_side/client_transport.py)  se ejecuten en computadores diferentes siempre y cuando los equipos se encuentren conectados a la misma red LAN cableada o inalámbrica. En ese caso, basta con consultar la dirección IP del computador que está ejecutando [websocket_server.py](server_side/websocket_server.py) mediante el comando ipconfig como se muestra en la siguiente figura.
 
 
 <p align="center">
