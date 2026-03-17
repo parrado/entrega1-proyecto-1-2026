@@ -1,6 +1,8 @@
 import uuid
 from random import randint
 
+
+
 # game_engine.py
 # -------------------------------------------------
 # You must implement ALL game logic in this file.
@@ -11,62 +13,73 @@ from random import randint
 #   - Turn control
 # -------------------------------------------------
 
-
-# =================================================
-# INITIALIZATION
-# =================================================
-
-def initialize_game():
-    """
-    Create and reset the entire game state.
-
-    You must:
-    - Define board structure
-    - Define player storage
-    - Define turn order
-    - Define game phase (waiting, playing, finished)
-    """
-    pass
+# Each function should return a dictionary including a "message_type" field indicating if the message is a "broadcast" (to be sent to all players)
+# or a "unicast" (to be sent only to the requesting player), and the relevant data fields for the client(s) to update their state.
 
 
-def reset_game():
-    """
-    Optional: Reset game to initial conditions.
-    """
-    pass
+# Pieces colors for two players
+COLORS=["red","blue"]
+# Game states: waiting for players, defining turn order, in progress, finished
+GAME_STATES=["waiting_for_players","defining_turn_order","in_progress","finished"]
+
+# Function to generate random dice rolls
+def random_dices(): 
+       return randint(1, 6),randint(1, 6)
+
+# Only used during turn order definition phase
+first_turn={"draw":set(),"rolls" :0,"dice_value":0,"turn":None}
+
+# You should add more fields to board_state to represent the complete state of the board, such as the position of the pieces, the state of each player, etc. 
+# For now, only the players, the current player, the dice value, and the game state are included.
+board_state={    
+    "players":[],
+    "current_player": None,
+    "dices_value": (0,0),
+    "game_state": GAME_STATES[0]  
+}
+
+
+
+
+
 
 
 # =================================================
 # PLAYER MANAGEMENT
 # =================================================
 
-def add_player(player_name):
-    """
-    Add a new player (max 4).
+# Function called when a player joins the game. It should add the player to the game state and assign them a color. 
+# If the maximum number of players is reached, it should not add more players.
+# If the game is ready to start after this player joins, it should update the game state accordingly.
+# The function returns a message with the updated board state to be broadcasted to all players.
 
-    Must:
-    - Assign unique player_id
-    - Prevent adding more than 4 players
-    - Prevent duplicates if desired
+def add_player(player_name,playerID):    
 
-    Return:
-        {
-            "status": "ok" or "error",
-            "player_id": <int_if_ok>,
-            "message": <optional_message>
-        }
-    """
-    return {
-        "status": "ok", 
-        "player_id": str(uuid.uuid4())  # Example: generate unique ID
-    }
+    global board_state
+      
+    if len(board_state["players"])==2:        
+         return {"message_type":"broadcast","board_state": board_state}
+    
+   
+    color=COLORS[len(board_state["players"])]
+    
+    board_state["players"].append({"id":playerID,"name":player_name,"color":color,"pieces":[-1,-1,-1,-1]})
+
+    if len(board_state["players"])==2:
+        board_state["game_state"]=GAME_STATES[1]
+        board_state["current_player"]=board_state["players"][0]["id"]        
+        return {"message_type":"broadcast","board_state": board_state}
+    
+    return {"message_type":"broadcast","board_state": board_state}
 
 
-def remove_player(player_id):
-    """
-    Optional: Remove player from game.
-    """
-    pass
+# This function returns the player_id of the requesting player. 
+# It can be used by the client to identify itself and know which pieces belong to it, among other things.
+
+def get_my_id(player_id):
+    return {"message_type":"unicast","id": player_id}
+
+
 
 
 def get_players():
@@ -94,29 +107,71 @@ def next_turn():
     pass
 
 
+# Helper function to check if it's the requesting player's turn
 def is_player_turn(player_id):
-    """
-    Return True if it is player's turn.
-    """
-    pass
+
+    global board_state
+
+    if board_state["current_player"]==player_id:
+        return True
+    return False
+   
+
+
 
 
 # =================================================
 # DICE LOGIC
 # =================================================
-
+# The roll_dice function should handle both the turn order definition phase and the regular game phase.
 def roll_dice(player_id):
-    """
-    Handle dice roll.
 
-    Must:
-    - Validate turn
-    - Store dice result in game state
-    - Handle extra turn rules if needed
+    global board_state
+    global first_turn
 
-    Return dice value and status.
-    """
-    pass
+    # If the game was in turn order definition phase, assign the first turn to the player who rolled the highest number
+    if board_state["game_state"]==GAME_STATES[1]: 
+        if is_player_turn(player_id):        
+            dice0, dice1 =random_dices()
+            first_turn["rolls"]+=1
+        
+            if dice0>=board_state["dices_value"][0]: # If the current player rolls a higher number, they become the new turn holder
+                first_turn["draw"].add(player_id)
+                first_turn["turn"]=player_id               
+                
+
+            board_state["dices_value"]=(dice0,dice1)
+              
+            if board_state["players"][0]["id"]==player_id:
+                board_state["current_player"]=board_state["players"][1]["id"]
+            if board_state["players"][1]["id"]==player_id:
+                board_state["current_player"]=board_state["players"][0]["id"]
+
+                
+            if first_turn["rolls"]==2: # If all players have rolled, check for ties
+                if len(first_turn["draw"])==1: # If there is no tie, assign the turn to the player with the highest number
+                    board_state["current_player"]=first_turn["turn"]
+                    board_state["game_state"]=GAME_STATES[2] # The game starts
+                else: # If there is a tie, restart the process
+                    first_turn["rolls"]=0                    
+                    first_turn["turn"]=None
+                    first_turn["draw"]=set()
+                    board_state["current_player"]=board_state["players"][0]["id"] # Assign the turn to the first player to start the tie-breaking process
+
+    # If the game is already in progress, only the current player is allowed to roll the dice
+    if board_state["game_state"]==GAME_STATES[2]: 
+        if is_player_turn(player_id):        
+            dice0, dice1 =random_dices()
+            board_state["dices_value"]=(dice0,dice1)
+
+            # Here come the movement rules based on the dice value, but since the pieces and board are not implemented yet, only the dice value is returned for now
+
+
+
+    
+    return {"message_type":"broadcast","board_state": board_state}
+
+   
 
 
 def get_last_dice():
@@ -186,11 +241,7 @@ def get_board():
     pass
 
 
-def update_board():
-    """
-    Recalculate board if needed after movement.
-    """
-    pass
+
 
 
 def is_safe_square(position):

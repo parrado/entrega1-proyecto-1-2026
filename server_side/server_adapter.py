@@ -5,6 +5,7 @@
 import game_engine
 
 
+
 # Function to handle incoming requests from the WebSocket server and route them
 # to the appropriate game engine functions.
 def handle_request(request):
@@ -32,13 +33,18 @@ def handle_request(request):
     # -----------------------------
 
     if action == "join":
-        return game_engine.add_player(request.get("player_name"))
+        return game_engine.add_player(request.get("player_name"),request.get("player_id"))
 
     if action == "remove_player":
         return game_engine.remove_player(player_id)
 
     if action == "get_players":
         return game_engine.get_players()
+    
+    if action=="get_my_id":
+        return game_engine.get_my_id(player_id)
+    
+    
 
     # -----------------------------
     # TURN MANAGEMENT
@@ -84,3 +90,5 @@ def handle_request(request):
         "status": "error",
         "message": "Invalid action"
     }
+
+
