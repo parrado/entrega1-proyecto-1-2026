@@ -3,36 +3,42 @@
 from client_transport import GameClient
 
 
+# Function handling responses from server
+def handle_response(response):
+    
+    print("Response from server:")
+    print(response)
+
+
 def main():
 
-    client = GameClient("ws://127.0.0.1:8765")
+    client = GameClient("ws://127.0.0.1:8765", handle_response)
     client.connect()
 
-    print("\n--- INITIALIZE GAME ---")
-    print(client.send_action("initialize"))
+    player=input("Enter player name: ")
+    client.send_action("join", player_name=player)
 
-    print("\n--- ADD PLAYER ---")
-    print(client.send_action("join", player_name="Alice"))
+    while True:
+        command = input("Enter command (get_players/current_player/roll_dice/move_piece/get_board/get_state/exit): ")
+        if command == "exit":
+            break
+   
+
+        if command == "get_players":
+            client.send_action("get_players")   
+        elif command == "current_player":
+            client.send_action("current_player")
+        elif command == "roll_dice":
+            client.send_action("roll_dice")
+        elif command == "get_board":
+            client.send_action("get_board")     
+        elif command == "get_state":
+            client.send_action("get_state")
+        elif command == "get_my_id":
+            client.send_action("get_my_id")
+        else:
+            print("Unknown command")
     
-
-    print("\n--- GET PLAYERS ---")
-    print(client.send_action("get_players"))
-
-    print("\n--- CURRENT PLAYER ---")
-    print(client.send_action("current_player"))
-
-    print("\n--- ROLL DICE ---")
-    print(client.send_action("roll_dice"))
-
-    print("\n--- MOVE PIECE 0 ---")
-    print(client.send_action("move_piece", piece_id=0))
-
-    print("\n--- GET BOARD ---")
-    print(client.send_action("get_board"))
-
-    print("\n--- GET FULL STATE ---")
-    print(client.send_action("get_state"))
-
     client.close()
 
 

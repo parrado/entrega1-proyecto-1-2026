@@ -6,15 +6,17 @@
 import asyncio
 import websockets
 import json
-
+import threading
 
 class GameClient:
 
-    def __init__(self, uri="ws://localhost:8765"):
+    def __init__(self, uri="ws://localhost:8765", response_handler=None):
         self.uri = uri
+        self.response_handler = response_handler
         self.websocket = None
+        # Create the loop but don't set it as the main thread's loop
         self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        self.thread = None
 
     # ------------------------
     # INTERNAL ASYNC METHODS
@@ -22,30 +24,58 @@ class GameClient:
 
     async def _connect(self):
         self.websocket = await websockets.connect(self.uri)
+        # Schedule the listener task within the loop
+        self.loop.create_task(self._listen())
 
     async def _send(self, data):
-        await self.websocket.send(json.dumps(data))
+        if self.websocket:
+            await self.websocket.send(json.dumps(data))
 
     async def _receive(self):
+        # This will now stay active in the background thread
         response = await self.websocket.recv()
         return json.loads(response)
 
     async def _close(self):
-        await self.websocket.close()
+        if self.websocket:
+            await self.websocket.close()
+        self.loop.stop()
+
+    async def _listen(self):
+        try:
+            while True:
+                response = await self._receive()
+                if self.response_handler:
+                    # If your handler does UI work, ensure it's thread-safe!
+                    self.response_handler(response)
+        except websockets.exceptions.ConnectionClosed:
+            print("Connection closed by server.")
 
     # ------------------------
     # PUBLIC SYNC INTERFACE
     # ------------------------
 
     def connect(self):
-        self.loop.run_until_complete(self._connect())
+        """Starts the loop in a background thread and connects."""
+        self.thread = threading.Thread(target=self._run_event_loop, daemon=True)
+        self.thread.start()
+        # Use run_coroutine_threadsafe to talk to the background loop
+        future = asyncio.run_coroutine_threadsafe(self._connect(), self.loop)
+        return future.result() # Wait for connection to establish
+
+    def _run_event_loop(self):
+        asyncio.set_event_loop(self.loop)
+        self.loop.run_forever()
 
     def send_action(self, action, **kwargs):
+        """Thread-safe way to send messages from the main thread."""
         message = {"action": action}
         message.update(kwargs)
-        self.loop.run_until_complete(self._send(message))
-        return self.loop.run_until_complete(self._receive())
+        asyncio.run_coroutine_threadsafe(self._send(message), self.loop)
 
     def close(self):
-        self.loop.run_until_complete(self._close())
-        self.loop.close()
+        """Gracefully shut down the connection and the thread."""
+        if self.loop.is_running():
+            asyncio.run_coroutine_threadsafe(self._close(), self.loop)
+        if self.thread:
+            self.thread.join(timeout=1)
