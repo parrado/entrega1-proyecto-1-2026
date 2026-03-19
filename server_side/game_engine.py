@@ -135,9 +135,14 @@ def roll_dice(player_id):
             dice0, dice1 =random_dices()
             first_turn["rolls"]+=1
         
-            if dice0>=board_state["dices_value"][0]: # If the current player rolls a higher number, they become the new turn holder
+            if dice0>board_state["dices_value"][0]: # If the current player rolls a higher number, they become the new turn holder
+                first_turn["draw"].clear()
                 first_turn["draw"].add(player_id)
-                first_turn["turn"]=player_id               
+                first_turn["turn"]=player_id
+            elif dice0==board_state["dices_value"][0]:
+                 first_turn["draw"].add(player_id)
+
+
                 
 
             board_state["dices_value"]=(dice0,dice1)
